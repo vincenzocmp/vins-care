@@ -1,0 +1,13 @@
+import {demoStorage} from '@/lib/demo-storage.mjs';
+"use client";
+import Link from '@/components/NavLink';
+import {FormEvent,useState} from 'react';
+import {useRouter} from 'next/navigation';
+import PublicHeader from '@/components/PublicHeader';
+import {request} from '@/lib/booking';
+import {LoggedUser} from '@/lib/api';
+export default function Register(){
+ const router=useRouter();const [first,setFirst]=useState('');const [last,setLast]=useState('');const [email,setEmail]=useState('');const [password,setPassword]=useState('');const [seen,setSeen]=useState(false);const [error,setError]=useState('');const [busy,setBusy]=useState(false);
+ async function submit(e:FormEvent){e.preventDefault();setBusy(true);setError('');try{const data=await request<{access_token:string;user:LoggedUser}>('/booking/register',{method:'POST',body:JSON.stringify({first_name:first,last_name:last,email,password,notice_acknowledged:seen})});demoStorage.setItem('accessToken',data.access_token);demoStorage.setItem('loggedUser',JSON.stringify(data.user));window.dispatchEvent(new Event('app-medica-session-change'));router.push('/portal')}catch(e){setError(e instanceof Error?e.message:'Registrazione non riuscita')}finally{setBusy(false)}}
+ return <><PublicHeader/><main className="auth-content"><section className="card login-card"><span className="eyebrow">AREA PAZIENTE</span><h1>Crea il tuo account</h1><p className="muted">Gestisci appuntamenti e messaggi allo studio. In questa demo inserisci soltanto dati fittizi.</p>{error&&<div className="notice error" role="alert">{error}</div>}<form className="grid" onSubmit={submit}><div className="grid two"><label className="field">Nome<input required maxLength={100} autoComplete="given-name" value={first} onChange={e=>setFirst(e.target.value)}/></label><label className="field">Cognome<input required maxLength={100} autoComplete="family-name" value={last} onChange={e=>setLast(e.target.value)}/></label></div><label className="field">Email<input type="email" required autoComplete="email" value={email} onChange={e=>setEmail(e.target.value)}/></label><label className="field">Password (almeno 12 caratteri)<input type="password" minLength={12} maxLength={128} required autoComplete="new-password" value={password} onChange={e=>setPassword(e.target.value)}/></label><label className="checkbox-line"><input type="checkbox" required checked={seen} onChange={e=>setSeen(e.target.checked)}/><span>Ho letto l&apos;<Link href="/informativa" target="_blank">informativa della demo</Link>.</span></label><button className="button" disabled={busy}>{busy?'Creazione in corso…':'Crea account paziente'}</button></form><p>Hai già un account? <Link href="/login">Accedi</Link></p></section></main></>
+}
