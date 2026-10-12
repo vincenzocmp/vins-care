@@ -1,0 +1,4 @@
+Vins Care — esportazione del 12 ottobre 2026
+Commit sorgente: a0f0ad4dc7138687b8c8bc94c497fb85aa3b2dd5
+URL di riferimento: https://vins-care.bated54.chatgpt.site
+Export con identificativo hosting rimosso e documentazione di consegna aggiunta.
